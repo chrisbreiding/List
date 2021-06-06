@@ -1,11 +1,13 @@
 {
   "images" : [
     {
+      "filename" : "list_complication_icon_84x84.png",
       "idiom" : "watch",
       "scale" : "2x",
       "screen-width" : ">161"
     },
     {
+      "filename" : "list_complication_icon_94x94.png",
       "idiom" : "watch",
       "scale" : "2x",
       "screen-width" : ">183"

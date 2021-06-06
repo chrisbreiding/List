@@ -1,21 +1,25 @@
 {
   "images" : [
     {
+      "filename" : "list_complication_icon_32x32.png",
       "idiom" : "watch",
       "scale" : "2x",
       "screen-width" : "<=145"
     },
     {
+      "filename" : "list_complication_icon_36x36.png",
       "idiom" : "watch",
       "scale" : "2x",
       "screen-width" : ">161"
     },
     {
+      "filename" : "list_complication_icon_36x36.png",
       "idiom" : "watch",
       "scale" : "2x",
       "screen-width" : ">145"
     },
     {
+      "filename" : "list_complication_icon_40x40.png",
       "idiom" : "watch",
       "scale" : "2x",
       "screen-width" : ">183"

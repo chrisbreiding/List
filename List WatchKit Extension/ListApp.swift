@@ -1,19 +1,15 @@
-//
-//  ListApp.swift
-//  List WatchKit Extension
-//
-//  Created by Chris Breiding on 5/28/21.
-//
-
 import SwiftUI
 
 @main
 struct ListApp: App {
+    @StateObject private var modelData = ModelData()
+    @StateObject private var remoteData = RemoteData()
+
     var body: some Scene {
         WindowGroup {
-            NavigationView {
-                ContentView()
-            }
+            ContentView()
+                .environmentObject(modelData)
+                .environmentObject(remoteData)
         }
     }
 }
