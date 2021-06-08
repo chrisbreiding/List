@@ -31,6 +31,37 @@ struct PreviewData {
                             )
 
                         ]
+                    ),
+                    Store(
+                        id: "s2",
+                        name: "Trader Joe's",
+                        parentId: "p1",
+                        items: [
+                            Item(
+                                id: "i3",
+                                name: "Cheese",
+                                isChecked: false
+                            ),
+                            Item(
+                                id: "i4",
+                                name: "Bananas",
+                                isChecked: false
+                            )
+
+                        ]
+                    ),
+                    Store(
+                        id: "s3",
+                        name: "Mom's",
+                        parentId: "p1",
+                        items: [
+                            Item(
+                                id: "i5",
+                                name: "",
+                                isChecked: false
+                            )
+
+                        ]
                     )
                 ]
             )

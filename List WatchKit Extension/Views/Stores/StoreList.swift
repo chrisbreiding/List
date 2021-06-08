@@ -26,7 +26,6 @@ struct StoreList: View {
                 }
             }
         }
-        .navigationTitle("Stores")
     }
 }
 

@@ -18,15 +18,21 @@ struct ItemEditor: View {
         _name = State(initialValue: name)
     }
 
+    let rgbValue = 40.0
+
     var body: some View {
         VStack(spacing: 5) {
             TextField("Item Name", text: $name)
-            Button("Save", action: save)
-            .background(Color.blue)
-            .clipShape(Capsule())
-            Button("Cancel", action: onCancel)
-            .background(Color.red)
-            .clipShape(Capsule())
+            HStack {
+                Button("Cancel", action: onCancel)
+                .background(Color(red: rgbValue/255.0, green: rgbValue/255.0, blue: rgbValue/255.0))
+                .foregroundColor(Color.red)
+                .clipShape(Capsule())
+
+                Button("Save", action: save)
+                .background(Color.blue)
+                .clipShape(Capsule())
+            }
         }
         .navigationBarHidden(true)
     }
