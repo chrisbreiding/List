@@ -38,72 +38,108 @@ final class RemoteData: ObservableObject {
         }
     }
 
-    func disconnect() {
-        connected = false
-        Socket.default.disconnect()
-    }
+    func onReconnect(_ callback: @escaping () -> Void) {
+        Socket.default.get("stores") { error, data in
+            if error != nil {
+                self.error = error!
 
-    func ensureConnection (_ callback: @escaping () -> Void) {
-        if connected {
+                return
+            }
+
+            if self.modelData == nil { return }
+
+            let categories: [Category] = Socket.default.parseJSON(json: data as! String)
+
+            for category in categories {
+                for store in category.stores {
+                    self.updateItemsForStoreId(store.id, items: store.items)
+                }
+            }
+
             callback()
-        } else {
-            connect(callback)
         }
     }
 
-    func getStores(_ callback: @escaping () -> Void) {
+    func ensureConnection(_ callback: @escaping () -> Void) {
+        if connected {
+            callback()
+        } else {
+            print("ensuring socket connection before action")
+            connect {
+                self.onReconnect(callback)
+            }
+        }
+    }
+
+    func getStores() {
         if hasError(.stores) {
             clearError()
         }
 
         ensureConnection {
-            Socket.default.get("stores") { anError, json in
-                if anError == nil {
-                    self.modelData?.categories = Socket.default.parseJSON(json: json!)
+            Socket.default.get("stores") { error, data in
+                if error == nil {
+                    self.modelData?.categories = Socket.default.parseJSON(json: data as! String)
                 } else {
-                    self.error = anError!
+                    self.error = error!
                 }
-
-                callback()
             }
         }
     }
 
-    func subscribeToItems(_ storeDetailModel: StoreDetailModel, _ callback: @escaping () -> Void) {
-        Socket.default.on("\(storeDetailModel.store.id):items") { json in
-            print("got items \(json)")
+    func subscribeToItems() {
+        Socket.default.on("items") { data in
+            let dataDict = data as! [String: String]
+            let storeId = dataDict["storeId"]!
+            let itemsJson = dataDict["items"]!
+
+            print("got store \(storeId) items: \(itemsJson)")
 
             if self.hasError(.items) {
                 self.error = nil
             }
 
             if self.modelData != nil {
-                self.modelData!.categories[storeDetailModel.categoryIndex].stores[storeDetailModel.storeIndex].items = Socket.default.parseJSON(json: json)
+                self.updateItemsForStoreId(storeId, items: Socket.default.parseJSON(json: itemsJson))
             }
-
-            callback()
         }
 
-        Socket.default.on("items:error") { json in
-            self.error = Socket.default.parseJSON(json: json)
-            callback()
-        }
-
-        ensureConnection {
-            Socket.default.emit("get:items", storeDetailModel.store.id)
+        Socket.default.on("items:error") { data in
+            self.error = Socket.default.parseJSON(json: data as! String)
         }
     }
 
-    func unsubscribeToItems(_ storeDetailModel: StoreDetailModel) {
-        Socket.default.off("\(storeDetailModel.store.id):items")
+    func unsubscribeToItems() {
+        Socket.default.off("items")
         Socket.default.off("items:error")
     }
 
-    func syncItems(_ storeDetailModel: StoreDetailModel) {
+    func updateItemsForStoreId(_ storeId: String, items: [Item]) {
+        let indices = self.modelData?.getIndicesByStoreId(storeId)
+
+        if indices != nil {
+            self.modelData!.categories[indices!.categoryIndex].stores[indices!.storeIndex].items = items
+        }
+
+    }
+
+    func syncItems(_ storeDetailModel: StoreDetailModel, _ callback: @escaping () -> Void) {
+        Socket.default.once("items") { data in
+            callback()
+        }
+
         ensureConnection {
             Socket.default.emit("sync:items", [
                 "storeId": storeDetailModel.store.id,
                 "parentId": storeDetailModel.store.parentId
+            ])
+        }
+    }
+
+    func addItem(_ storeDetailModel: StoreDetailModel) {
+        ensureConnection {
+            Socket.default.emit("add:item", [
+                "storeId": storeDetailModel.store.id
             ])
         }
     }
@@ -121,5 +157,17 @@ final class RemoteData: ObservableObject {
                 ]
             ])
         }
+    }
+
+    func deleteItem(_ storeDetailModel: StoreDetailModel, _ item: Item) {
+        modelData?.deleteItem(storeDetailModel, item)
+
+        ensureConnection {
+            Socket.default.emit("delete:item", [
+                "storeId": storeDetailModel.store.id,
+                "itemId": item.id
+            ])
+        }
+
     }
 }

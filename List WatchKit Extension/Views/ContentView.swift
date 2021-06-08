@@ -13,17 +13,36 @@ struct ContentView: View {
             } else if remoteData.hasError(.connection) {
                 ErrorView(error: remoteData.error!, onRetry: {
                     print("Retry after error - connect")
-                    remoteData.connect()
+                    connect()
+                })
+            } else if remoteData.hasError(.stores) {
+                ErrorView(error: remoteData.error!, onRetry: {
+                    print("Retry after error - get stores")
+                    getStores()
                 })
             } else {
-                ProgressView("Connecting")
+                ProgressView("Loading")
             }
         }
         .onAppear {
             print("ContentView onAppear - connect")
-            remoteData.modelData = modelData
-            remoteData.connect()
+            start()
         }
+    }
+
+    func start() {
+        remoteData.modelData = modelData
+        remoteData.subscribeToItems()
+        connect()
+    }
+
+    func connect() {
+        remoteData.connect(getStores)
+    }
+
+    func getStores() {
+        print("ContentView - get stores")
+        remoteData.getStores()
     }
 }
 

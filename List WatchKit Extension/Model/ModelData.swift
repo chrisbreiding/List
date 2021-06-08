@@ -14,6 +14,25 @@ final class ModelData: ObservableObject {
         return categories[storeDetailModel.categoryIndex].stores[storeDetailModel.storeIndex]
     }
 
+    struct Indices {
+        let categoryIndex: Int
+        let storeIndex: Int
+    }
+
+    func getIndicesByStoreId(_ storeId: String) -> Indices? {
+        for (categoryIndex, category) in categories.enumerated() {
+            for (storeIndex, store) in category.stores.enumerated() {
+                if store.id == storeId {
+                    return Indices(categoryIndex: categoryIndex, storeIndex: storeIndex)
+                }
+            }
+        }
+
+        return nil
+    }
+
+//    func addItem(_ )
+
     func updateItem(_ storeDetailModel: StoreDetailModel, _ item: Item) {
         let catIndex = storeDetailModel.categoryIndex
         let storeIndex = storeDetailModel.storeIndex
@@ -25,10 +44,21 @@ final class ModelData: ObservableObject {
         categories[catIndex].stores[storeIndex].items[index!] = item
     }
 
+    func deleteItem(_ storeDetailModel: StoreDetailModel, _ item: Item) {
+        let catIndex = storeDetailModel.categoryIndex
+        let storeIndex = storeDetailModel.storeIndex
+
+        let index = categories[catIndex].stores[storeIndex].items.firstIndex(where: { $0.id == item.id })
+
+        if index == nil { return }
+
+        categories[catIndex].stores[storeIndex].items.remove(at: index!)
+    }
+
     func loadPreviewData() -> ModelData {
         print("loadPreviewData")
-        
-        categories = load("previewData.json")
+
+        categories = PreviewData.get()
         
         return self
     }

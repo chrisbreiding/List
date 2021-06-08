@@ -43,10 +43,13 @@ open class Socket {
         }
 
         print("connect socket")
-        socket.connect(timeoutAfter: 20) {
+        socket.connect(timeoutAfter: 10) {
             print("socket connection timed out")
             self.connecting = false
             self.connected = false
+
+            self.socket.off(clientEvent: .connect)
+            self.socket.off(clientEvent: .disconnect)
 
             callback(Error(
                 name: "TimedoutError",
@@ -57,45 +60,36 @@ open class Socket {
         }
     }
 
-    func disconnect() {
-        if !connected { return }
-
-        socket.disconnect()
-        connected = false
-    }
-
-    func onDisconnect (_ callback: @escaping () -> Void) {
+    func onDisconnect(_ callback: @escaping () -> Void) {
         socket.once(clientEvent: .disconnect) { data, ack in
             callback()
         }
     }
 
-    @discardableResult
-    func on(_ eventName: String, _ callback: @escaping (String) -> Void) -> UUID {
+    func on(_ eventName: String, _ callback: @escaping (Any) -> Void) {
         socket.on(eventName) { data, ack in
-            callback(data[0] as! String)
+            callback(data[0])
         }
     }
 
-    @discardableResult 
-    func once(_ eventName: String, _ callback: @escaping (String) -> Void) -> UUID {
+    func once(_ eventName: String, _ callback: @escaping (Any) -> Void) {
         socket.once(eventName) { data, ack in
-            callback(data[0] as! String)
+            callback(data[0])
         }
     }
 
-    func get(_ eventName: String, _ callback: @escaping (Error?, String?) -> Void) {
+    func get(_ eventName: String, _ callback: @escaping (Error?, Any?) -> Void) {
         var errorId: UUID? = nil
 
-        let eventId = once(eventName) { [weak self] result in
+        let eventId = socket.once(eventName) { [weak self] data, ack in
             if errorId != nil {
                 self?.off(id: errorId!)
             }
-            callback(nil, result)
+            callback(nil, data[0])
         }
-        errorId = once("\(eventName):error") { [weak self] error in
+        errorId = socket.once("\(eventName):error") { [weak self] data, ack in
             self?.off(id: eventId)
-            callback(Socket.default.parseJSON(json: error), nil)
+            callback(Socket.default.parseJSON(json: data[0] as! String), nil)
         }
 
         emit("get:\(eventName)")

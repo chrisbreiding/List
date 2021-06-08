@@ -3,14 +3,14 @@ import SwiftUI
 struct StoreDetail: View {
     @EnvironmentObject var modelData: ModelData
     @EnvironmentObject var remoteData: RemoteData
-    @State private var loading = true
+    @State private var syncing = false
     @State private var showUncheckedOnly = UserDefaults.standard.bool(forKey: "Items.ShowUncheckedOnly")
     @State private var error: Error? = nil
     let model: StoreDetailModel
 
     var body: some View {
         Group {
-            if loading {
+            if syncing {
                 // switching directly from the List to a ProgressView causes an error
                 // for some reason, but wrapping it in a ScrollView does not error
                 ScrollView {
@@ -18,7 +18,7 @@ struct StoreDetail: View {
                         Text(" ").frame(width: 100.0, height: 50.0)
                         ProgressView()
                         Text(" ").frame(width: 100.0, height: 50.0)
-                        Text("Loading items")
+                        Text("Syncing items")
                     }
                 }
                 .disabled(true)
@@ -29,46 +29,37 @@ struct StoreDetail: View {
                     showUncheckedOnly: $showUncheckedOnly,
                     storeDetailModel: model,
                     syncItems: syncItems,
-                    onUpdateItem: updateItem
+                    onUpdateItem: updateItem,
+                    onDeleteItem: deleteItem
                 )
             }
         }
         .navigationTitle("Stores")
-        .onAppear {
-            print("StoreDetail onAppear - subscribe")
-            subscribe()
-        }
-        .onDisappear {
-            print("StoreDetail onDisappear - unsubscribe")
-            unsubscribe()
-        }
-    }
-
-    func subscribe() {
-        loading = true
-
-        remoteData.subscribeToItems(model) {
-            loading = false
-        }
-    }
-
-    func unsubscribe() {
-        remoteData.unsubscribeToItems(model)
     }
 
     func updateItem(_ item: Item)  {
-        if loading { return }
+        if syncing { return }
 
         remoteData.updateItem(model, item)
     }
 
+    func deleteItem(_ item: Item) {
+        if syncing { return }
+
+        remoteData.deleteItem(model, item)
+    }
+
     func syncItems() {
         print("sync items")
-        if loading { return }
+        if syncing { return }
 
-        loading = true
+        syncing = true
 
-        remoteData.syncItems(model)
+        remoteData.syncItems(model) {
+            DispatchQueue.main.async {
+                syncing = false
+            }
+        }
     }
 }
 
