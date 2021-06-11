@@ -1,9 +1,35 @@
 import Foundation
 
 final class RemoteData: ObservableObject {
-    @Published var connected = false
+    @Published var status = Socket.Status.notConnected
     @Published var error: Error? = nil
+    @Published var debug = UserDefaults.standard.bool(forKey: "Debug")
     var modelData: ModelData? = nil
+    var timer: Timer? = nil
+
+    private var socketStatus: Socket.Status {
+        return Socket.default.status
+    }
+
+    deinit {
+        stopTrackingStatus()
+    }
+
+    func trackStatus() {
+        if timer != nil { return }
+
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            if self.status != Socket.default.status {
+                print("update remoteData.status to \(Socket.default.status)")
+                self.status = Socket.default.status
+            }
+        }
+    }
+
+    func stopTrackingStatus() {
+        timer?.invalidate()
+        timer = nil
+    }
 
     func hasError(_ reason: Error.Reason) -> Bool {
         return error != nil && error!.reason == reason
@@ -22,23 +48,38 @@ final class RemoteData: ObservableObject {
             clearError()
         }
 
-        Socket.default.onDisconnect {
-            self.connected = false
+        if socketStatus == .connecting {
+            Socket.default.onConnect {
+                callback?()
+            }
+
+            return
+        }
+
+        if socketStatus == .connected {
+            callback?()
+
+            return
         }
 
         Socket.default.connect { error in
             if error == nil {
-                self.connected = true
-                if callback != nil {
-                    callback!()
-                }
+                callback?()
             } else {
                 self.error = error
             }
         }
     }
 
-    func onReconnect(_ callback: @escaping () -> Void) {
+    func disconnect() {
+        Socket.default.disconnect()
+    }
+
+    func onReconnect() {
+        onReconnect(nil)
+    }
+
+    func onReconnect(_ callback: (() -> Void)?) {
         Socket.default.get("stores") { error, data in
             if error != nil {
                 self.error = error!
@@ -56,18 +97,24 @@ final class RemoteData: ObservableObject {
                 }
             }
 
-            callback()
+            callback?()
         }
     }
 
     func ensureConnection(_ callback: @escaping () -> Void) {
-        if connected {
-            callback()
-        } else {
-            print("ensuring socket connection before action")
-            connect {
-                self.onReconnect(callback)
-            }
+        switch socketStatus {
+            case .connected:
+                callback()
+            case .connecting:
+                print("waiting for socket connection before action")
+                Socket.default.onConnect {
+                    self.onReconnect(callback)
+                }
+            case .notConnected:
+                print("connecting socket before action")
+                connect {
+                    self.onReconnect(callback)
+                }
         }
     }
 
@@ -88,6 +135,8 @@ final class RemoteData: ObservableObject {
     }
 
     func subscribeToItems() {
+        print("subscribe to items")
+
         Socket.default.on("items") { data in
             let dataDict = data as! [String: String]
             let storeId = dataDict["storeId"]!

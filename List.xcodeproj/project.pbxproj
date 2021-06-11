@@ -29,6 +29,7 @@
 		4B827886266C66F60088C884 /* ItemList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B827885266C66F60088C884 /* ItemList.swift */; };
 		4B827889266C75810088C884 /* ItemEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B827888266C75810088C884 /* ItemEditor.swift */; };
 		4B82788B266F0B030088C884 /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B82788A266F0B030088C884 /* PreviewData.swift */; };
+		4B82789226710B7B0088C884 /* Indicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B82789126710B7B0088C884 /* Indicator.swift */; };
 		4BA2025B2665D86C005EF5F4 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2025A2665D86C005EF5F4 /* Error.swift */; };
 		4BA2025D2665D9EC005EF5F4 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2025C2665D9EC005EF5F4 /* ErrorView.swift */; };
 /* End PBXBuildFile section */
@@ -100,6 +101,7 @@
 		4B827885266C66F60088C884 /* ItemList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemList.swift; sourceTree = "<group>"; };
 		4B827888266C75810088C884 /* ItemEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemEditor.swift; sourceTree = "<group>"; };
 		4B82788A266F0B030088C884 /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
+		4B82789126710B7B0088C884 /* Indicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Indicator.swift; sourceTree = "<group>"; };
 		4BA2025A2665D86C005EF5F4 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		4BA2025C2665D9EC005EF5F4 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -232,6 +234,7 @@
 			isa = PBXGroup;
 			children = (
 				4BA2025C2665D9EC005EF5F4 /* ErrorView.swift */,
+				4B82789126710B7B0088C884 /* Indicator.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -374,6 +377,7 @@
 				4B20B03F2661C22800A10F9B /* ItemRow.swift in Sources */,
 				4B20B03426619E4B00A10F9B /* Store.swift in Sources */,
 				4B20B01826619B6900A10F9B /* ContentView.swift in Sources */,
+				4B82789226710B7B0088C884 /* Indicator.swift in Sources */,
 				4B20B03126619E1A00A10F9B /* ModelData.swift in Sources */,
 				4B827886266C66F60088C884 /* ItemList.swift in Sources */,
 				4BA2025B2665D86C005EF5F4 /* Error.swift in Sources */,

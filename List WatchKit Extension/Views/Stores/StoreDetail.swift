@@ -75,5 +75,6 @@ struct StoreDetail_Previews: PreviewProvider {
             )
         )
         .environmentObject(previewData)
+        .environmentObject(RemoteData())
     }
 }

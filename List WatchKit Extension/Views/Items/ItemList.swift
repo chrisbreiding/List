@@ -15,9 +15,19 @@ struct ItemList: View {
         }
     }
 
+    var sectionHeader: some View {
+        HStack(spacing: 5) {
+            Text(storeDetailModel.store.name)
+            if remoteData.debug {
+                Spacer()
+                Indicator(status: remoteData.status)
+            }
+        }
+    }
+
     var body: some View {
         List {
-            Section(header: Text(storeDetailModel.store.name)) {
+            Section(header: sectionHeader) {
                 Toggle(isOn: $showUncheckedOnly) {
                     Text("Hide checked")
                 }
@@ -29,6 +39,9 @@ struct ItemList: View {
                     )
                 }
                 .onDelete(perform: onDelete)
+                .onMove { from, to in
+                    remoteData.moveItem(storeDetailModel, from, to)
+                }
 
                 if filteredItems.count == 0 {
                     Text("No items").listRowBackground(Color.black)
@@ -90,5 +103,6 @@ struct ItemList_Previews: PreviewProvider {
             onDeleteItem: { offsets in }
         )
         .environmentObject(previewData)
+        .environmentObject(RemoteData())
     }
 }

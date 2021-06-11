@@ -8,8 +8,8 @@ struct ListApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(modelData)
-                .environmentObject(remoteData)
+            .environmentObject(modelData)
+            .environmentObject(remoteData)
         }
     }
 }

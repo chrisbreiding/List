@@ -1,13 +1,7 @@
-//
-//  ItemEditor.swift
-//  List WatchKit Extension
-//
-//  Created by Chris Breiding on 6/5/21.
-//
-
 import SwiftUI
 
 struct ItemEditor: View {
+    @EnvironmentObject var remoteData: RemoteData
     @State var name: String
     let onSave: (String) -> Void
     let onCancel: () -> Void
@@ -22,6 +16,12 @@ struct ItemEditor: View {
 
     var body: some View {
         VStack(spacing: 5) {
+            HStack {
+                if remoteData.debug {
+                    Spacer()
+                    Indicator(status: remoteData.status)
+                }
+            }
             TextField("Item Name", text: $name)
             HStack {
                 Button("Cancel", action: onCancel)
@@ -29,7 +29,9 @@ struct ItemEditor: View {
                 .foregroundColor(Color.red)
                 .clipShape(Capsule())
 
-                Button("Save", action: save)
+                Button(action: save) {
+                    Text("Save")
+                }
                 .background(Color.blue)
                 .clipShape(Capsule())
             }
@@ -49,5 +51,6 @@ struct ItemEditor_Previews: PreviewProvider {
             onSave: { name in },
             onCancel: {}
         )
+        .environmentObject(RemoteData())
     }
 }
