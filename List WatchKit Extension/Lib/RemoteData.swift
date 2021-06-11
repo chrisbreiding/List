@@ -164,12 +164,10 @@ final class RemoteData: ObservableObject {
     }
 
     func updateItemsForStoreId(_ storeId: String, items: [Item]) {
-        let indices = self.modelData?.getIndicesByStoreId(storeId)
-
-        if indices != nil {
-            self.modelData!.categories[indices!.categoryIndex].stores[indices!.storeIndex].items = items
+        if let indices = self.modelData?.getIndicesByStoreId(storeId) {
+            let (categoryIndex, storeIndex) = indices
+            self.modelData!.categories[categoryIndex].stores[storeIndex].items = items
         }
-
     }
 
     func syncItems(_ storeDetailModel: StoreDetailModel, _ callback: @escaping () -> Void) {
@@ -185,6 +183,7 @@ final class RemoteData: ObservableObject {
         }
     }
 
+    // TODO: add callback to this and tracking 'addingItem' state
     func addItem(_ storeDetailModel: StoreDetailModel) {
         ensureConnection {
             Socket.default.emit("add:item", [
@@ -199,13 +198,20 @@ final class RemoteData: ObservableObject {
         ensureConnection {
             Socket.default.emit("update:item", [
                 "storeId": storeDetailModel.store.id,
-                "item": [
-                    "id": item.id,
-                    "name": item.name,
-                    "isChecked": item.isChecked
-                ]
+                "item": item.serialize(),
             ])
         }
+    }
+
+    func moveItem(_ storeDetailModel: StoreDetailModel, _ from: IndexSet, _ to: Int) {
+        modelData?.moveItem(storeDetailModel, from, to)
+
+        if modelData == nil { return }
+
+        Socket.default.emit("update:items", [
+            "storeId": storeDetailModel.store.id,
+            "items": modelData!.serializeItems(storeDetailModel),
+        ])
     }
 
     func deleteItem(_ storeDetailModel: StoreDetailModel, _ item: Item) {

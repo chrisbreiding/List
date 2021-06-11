@@ -14,16 +14,11 @@ final class ModelData: ObservableObject {
         return categories[storeDetailModel.categoryIndex].stores[storeDetailModel.storeIndex]
     }
 
-    struct Indices {
-        let categoryIndex: Int
-        let storeIndex: Int
-    }
-
-    func getIndicesByStoreId(_ storeId: String) -> Indices? {
+    func getIndicesByStoreId(_ storeId: String) -> (Int, Int)? {
         for (categoryIndex, category) in categories.enumerated() {
             for (storeIndex, store) in category.stores.enumerated() {
                 if store.id == storeId {
-                    return Indices(categoryIndex: categoryIndex, storeIndex: storeIndex)
+                    return (categoryIndex, storeIndex)
                 }
             }
         }
@@ -31,7 +26,12 @@ final class ModelData: ObservableObject {
         return nil
     }
 
-//    func addItem(_ )
+    func serializeItems(_ storeDetailModel: StoreDetailModel) -> [Item.Serialized] {
+        let catIndex = storeDetailModel.categoryIndex
+        let storeIndex = storeDetailModel.storeIndex
+
+        return categories[catIndex].stores[storeIndex].serializeItems()
+    }
 
     func updateItem(_ storeDetailModel: StoreDetailModel, _ item: Item) {
         let catIndex = storeDetailModel.categoryIndex
@@ -44,6 +44,16 @@ final class ModelData: ObservableObject {
         categories[catIndex].stores[storeIndex].items[index!] = item
     }
 
+    func moveItem(_ storeDetailModel: StoreDetailModel, _ from: IndexSet, _ to: Int) {
+        let catIndex = storeDetailModel.categoryIndex
+        let storeIndex = storeDetailModel.storeIndex
+
+        categories[catIndex].stores[storeIndex].items.move(fromOffsets: from, toOffset: to)
+
+        print("items:")
+        print(categories[catIndex].stores[storeIndex].items)
+    }
+    
     func deleteItem(_ storeDetailModel: StoreDetailModel, _ item: Item) {
         let catIndex = storeDetailModel.categoryIndex
         let storeIndex = storeDetailModel.storeIndex

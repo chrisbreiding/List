@@ -5,4 +5,8 @@ struct Store: Hashable, Codable, Identifiable {
     var name: String
     var parentId: String
     var items: [Item] = []
+
+    func serializeItems() -> [Item.Serialized] {
+        return items.map { item in item.serialize() }
+    }
 }
