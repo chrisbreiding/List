@@ -51,6 +51,6 @@ struct ItemEditor_Previews: PreviewProvider {
             onSave: { name in },
             onCancel: {}
         )
-        .environmentObject(RemoteData())
+        .environmentObject(RemoteData().enableDebug())
     }
 }

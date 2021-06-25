@@ -31,6 +31,12 @@ final class RemoteData: ObservableObject {
         timer = nil
     }
 
+    func enableDebug() -> RemoteData {
+        debug = true
+
+        return self
+    }
+
     func hasError(_ reason: Error.Reason) -> Bool {
         return error != nil && error!.reason == reason
     }

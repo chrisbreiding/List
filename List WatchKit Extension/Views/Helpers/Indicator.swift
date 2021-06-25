@@ -17,6 +17,7 @@ struct Indicator: View {
     var body: some View {
         Image(systemName: "circle.fill")
             .foregroundColor(color)
+            .font(.footnote)
     }
 }
 

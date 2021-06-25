@@ -80,9 +80,8 @@ struct ItemList: View {
     }
 
     func onDelete(at offsets: IndexSet) {
-        if offsets.first != nil {
-            let item = filteredItems[offsets.first!]
-            onDeleteItem(item)
+        if let offset = offsets.first {
+            onDeleteItem(filteredItems[offset])
         }
     }
 }
@@ -103,6 +102,6 @@ struct ItemList_Previews: PreviewProvider {
             onDeleteItem: { offsets in }
         )
         .environmentObject(previewData)
-        .environmentObject(RemoteData())
+        .environmentObject(RemoteData().enableDebug())
     }
 }
