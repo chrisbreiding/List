@@ -6,6 +6,7 @@ final class RemoteData: ObservableObject {
     @Published var debug = UserDefaults.standard.bool(forKey: "Debug")
     var modelData: ModelData? = nil
     var timer: Timer? = nil
+    var cancelConnecting = false
 
     private var socketStatus: Socket.Status {
         return Socket.default.status
@@ -46,46 +47,84 @@ final class RemoteData: ObservableObject {
     }
 
     func connect() {
-        connect(nil)
+        connect {}
     }
 
-    func connect(_ callback: (() -> Void)?) {
+    func connect(_ onConnect: @escaping () -> Void) {
+        print("remoteData.connect")
+
         if hasError(.connection) {
             clearError()
         }
 
         if socketStatus == .connecting {
+            print("already connecting")
+
             Socket.default.onConnect {
-                callback?()
+                onConnect()
             }
 
             return
         }
 
         if socketStatus == .connected {
-            callback?()
+            print("already connected")
+
+            onConnect()
 
             return
         }
 
-        Socket.default.connect { error in
-            if error == nil {
-                callback?()
-            } else {
-                self.error = error
+        self.connect(triesLeft: 5, onConnect)
+    }
+
+    func connect(triesLeft: Int, _ onConnect: @escaping () -> Void) {
+        print("connect with \(triesLeft) tries left")
+
+        if cancelConnecting {
+            print("cancel connecting")
+
+            cancelConnecting = false
+
+            return
+        }
+
+        Socket.default.connect(timeout: 5) { error in
+            if self.cancelConnecting {
+                print("cancel connecting")
+
+                self.cancelConnecting = false
+
+                return
             }
+
+            if error == nil {
+                onConnect()
+
+                return
+            }
+
+            if triesLeft == 0 {
+                self.error = error
+
+                return
+            }
+
+            self.connect(triesLeft: triesLeft - 1, onConnect)
         }
     }
 
     func disconnect() {
+        cancelConnecting = true
+
         Socket.default.disconnect()
     }
 
     func onReconnect() {
-        onReconnect(nil)
+        onReconnect { }
     }
 
-    func onReconnect(_ callback: (() -> Void)?) {
+    func onReconnect(_ callback: @escaping () -> Void) {
         Socket.default.get("stores") { error, data in
             if error != nil {
                 self.error = error!
@@ -103,7 +142,7 @@ final class RemoteData: ObservableObject {
                 }
             }
 
-            callback?()
+            callback()
         }
     }
 

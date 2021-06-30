@@ -41,7 +41,7 @@ open class Socket {
         socket = manager.defaultSocket
     }
 
-    func connect(_ callback: @escaping (Error?) -> Void) {
+    func connect(timeout: Double, _ callback: @escaping (Error?) -> Void) {
         if (status != .notConnected) { return }
 
         socket.once(clientEvent: .connect) { data, ack in
@@ -54,7 +54,7 @@ open class Socket {
         }
 
         print("connect socket")
-        socket.connect(timeoutAfter: 10) {
+        socket.connect(timeoutAfter: timeout) {
             print("socket connection timed out")
 
             self.socket.off(clientEvent: .connect)
