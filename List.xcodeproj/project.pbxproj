@@ -10,7 +10,6 @@
 		4B0EDAE92663FBC30097CBC4 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0EDAE82663FBC30097CBC4 /* Socket.swift */; };
 		4B0EDAEE2663FF720097CBC4 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 4B0EDAED2663FF720097CBC4 /* SocketIO */; };
 		4B0EDAF22664919D0097CBC4 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0EDAF12664919D0097CBC4 /* Category.swift */; };
-		4B1C45E22669C9350077943D /* StoreDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B1C45E12669C9350077943D /* StoreDetailModel.swift */; };
 		4B1C45E42669D7340077943D /* RemoteData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B1C45E32669D7340077943D /* RemoteData.swift */; };
 		4B20B00726619B6500A10F9B /* List WatchKit App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 4B20B00626619B6500A10F9B /* List WatchKit App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4B20B00C26619B6900A10F9B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4B20B00B26619B6900A10F9B /* Assets.xcassets */; };
@@ -79,7 +78,6 @@
 /* Begin PBXFileReference section */
 		4B0EDAE82663FBC30097CBC4 /* Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		4B0EDAF12664919D0097CBC4 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
-		4B1C45E12669C9350077943D /* StoreDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreDetailModel.swift; sourceTree = "<group>"; };
 		4B1C45E32669D7340077943D /* RemoteData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteData.swift; sourceTree = "<group>"; };
 		4B20B00226619B6500A10F9B /* List.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = List.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B20B00626619B6500A10F9B /* List WatchKit App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "List WatchKit App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -203,7 +201,6 @@
 			children = (
 				4B20B03026619E1A00A10F9B /* ModelData.swift */,
 				4B20B03326619E4B00A10F9B /* Store.swift */,
-				4B1C45E12669C9350077943D /* StoreDetailModel.swift */,
 				4B20B03C2661BE3100A10F9B /* Item.swift */,
 				4B0EDAF12664919D0097CBC4 /* Category.swift */,
 				4BA2025A2665D86C005EF5F4 /* Error.swift */,
@@ -388,7 +385,6 @@
 				4B20B03B2661AA2D00A10F9B /* StoreDetail.swift in Sources */,
 				4B20B01C26619B6900A10F9B /* ComplicationController.swift in Sources */,
 				4BA2025D2665D9EC005EF5F4 /* ErrorView.swift in Sources */,
-				4B1C45E22669C9350077943D /* StoreDetailModel.swift in Sources */,
 				4B82788B266F0B030088C884 /* PreviewData.swift in Sources */,
 				4B1C45E42669D7340077943D /* RemoteData.swift in Sources */,
 				4B827889266C75810088C884 /* ItemEditor.swift in Sources */,

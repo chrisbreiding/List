@@ -6,7 +6,7 @@ struct StoreDetail: View {
     @State private var syncing = false
     @State private var showUncheckedOnly = UserDefaults.standard.bool(forKey: "Items.ShowUncheckedOnly")
     @State private var error: Error? = nil
-    let model: StoreDetailModel
+    let store: Store
 
     var body: some View {
         Group {
@@ -27,7 +27,7 @@ struct StoreDetail: View {
             } else {
                 ItemList(
                     showUncheckedOnly: $showUncheckedOnly,
-                    storeDetailModel: model,
+                    store: store,
                     syncItems: syncItems,
                     onUpdateItem: updateItem,
                     onDeleteItem: deleteItem
@@ -40,13 +40,13 @@ struct StoreDetail: View {
     func updateItem(_ item: Item)  {
         if syncing { return }
 
-        remoteData.updateItem(model, item)
+        remoteData.updateItem(store, item)
     }
 
     func deleteItem(_ item: Item) {
         if syncing { return }
 
-        remoteData.deleteItem(model, item)
+        remoteData.deleteItem(store, item)
     }
 
     func syncItems() {
@@ -55,7 +55,7 @@ struct StoreDetail: View {
 
         syncing = true
 
-        remoteData.syncItems(model) {
+        remoteData.syncItems(store) {
             DispatchQueue.main.async {
                 syncing = false
             }
@@ -67,13 +67,7 @@ struct StoreDetail_Previews: PreviewProvider {
     static var previews: some View {
         let previewData = ModelData().loadPreviewData()
 
-        StoreDetail(
-            model: StoreDetailModel(
-                store: previewData.categories[0].stores[0],
-                categoryIndex: 0,
-                storeIndex: 0
-            )
-        )
+        StoreDetail(store: previewData.categories[0].stores[0])
         .environmentObject(previewData)
         .environmentObject(RemoteData())
     }

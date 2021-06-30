@@ -18,21 +18,29 @@ struct StoreList: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(modelData.categories) { category in
+                ForEach(modelData.categories, id: \.id) { category in
                     Section(header: sectionHeader(category)) {
-                        ForEach(category.stores) { store in
-                            let (categoryIndex, storeIndex) = modelData.getIndicesByStoreId(store.id)!
-                            NavigationLink(destination: StoreDetail(
-                                model: StoreDetailModel(
-                                    store: store,
-                                    categoryIndex: categoryIndex,
-                                    storeIndex: storeIndex)
-                            )) {
+                        ForEach(category.stores, id: \.id) { store in
+                            NavigationLink(destination: StoreDetail(store: store)) {
                                 Text(store.name)
                             }
                         }
                     }
                 }
+
+                Button(action: syncStores) {
+                    HStack(spacing: 5) {
+                        Spacer()
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                        Text("Sync Stores")
+                        Spacer()
+                    }
+                }
+                .foregroundColor(Color.blue)
+
+                Spacer()
+                .listRowBackground(Color.black)
+
                 Toggle(isOn: $remoteData.debug) {
                     Text("Debug")
                 }
@@ -63,12 +71,16 @@ struct StoreList: View {
             }
         })
     }
+
+    func syncStores() {
+        remoteData.getStores()
+    }
 }
 
 struct StoreList_Previews: PreviewProvider {
     static var previews: some View {
         StoreList()
-        .environmentObject(RemoteData())
+        .environmentObject(RemoteData().enableDebug())
         .environmentObject(ModelData().loadPreviewData())
     }
 }

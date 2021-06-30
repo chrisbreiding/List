@@ -4,20 +4,20 @@ struct ItemList: View {
     @EnvironmentObject var modelData: ModelData
     @EnvironmentObject var remoteData: RemoteData
     @Binding var showUncheckedOnly: Bool
-    let storeDetailModel: StoreDetailModel
+    let store: Store
     let syncItems: () -> Void
     let onUpdateItem: (Item) -> Void
     let onDeleteItem: (Item) -> Void
 
     var filteredItems: [Item] {
-        modelData.store(storeDetailModel).items.filter { item in
+        modelData.store(store.id).items.filter { item in
             (!showUncheckedOnly || !item.isChecked)
         }
     }
 
     var sectionHeader: some View {
         HStack(spacing: 5) {
-            Text(storeDetailModel.store.name)
+            Text(store.name)
             if remoteData.debug {
                 Spacer()
                 Indicator(status: remoteData.status)
@@ -40,7 +40,7 @@ struct ItemList: View {
                 }
                 .onDelete(perform: onDelete)
                 .onMove { from, to in
-                    remoteData.moveItem(storeDetailModel, from, to)
+                    remoteData.moveItem(store, from, to)
                 }
 
                 if filteredItems.count == 0 {
@@ -58,17 +58,15 @@ struct ItemList: View {
                 .foregroundColor(.green)
             }
 
-            Section(header: Spacer()) {
-                Button(action: syncItems) {
-                    HStack(spacing: 5) {
-                        Spacer()
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                        Text("Sync Items")
-                        Spacer()
-                    }
+            Button(action: syncItems) {
+                HStack(spacing: 5) {
+                    Spacer()
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                    Text("Sync Items")
+                    Spacer()
                 }
-                .foregroundColor(Color.blue)
             }
+            .foregroundColor(Color.blue)
         }
         .onChange(of: showUncheckedOnly) { value in
             UserDefaults.standard.set(value, forKey: "Items.ShowUncheckedOnly")
@@ -76,7 +74,7 @@ struct ItemList: View {
     }
 
     func addItem() {
-        remoteData.addItem(storeDetailModel)
+        remoteData.addItem(store)
     }
 
     func onDelete(at offsets: IndexSet) {
@@ -92,11 +90,7 @@ struct ItemList_Previews: PreviewProvider {
 
         ItemList(
             showUncheckedOnly: .constant(false),
-            storeDetailModel: StoreDetailModel(
-                store: previewData.categories[0].stores[0],
-                categoryIndex: 0,
-                storeIndex: 0
-            ),
+            store: previewData.categories[0].stores[0],
             syncItems: {},
             onUpdateItem: { item in },
             onDeleteItem: { offsets in }

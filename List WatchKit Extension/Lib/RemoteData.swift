@@ -215,56 +215,55 @@ final class RemoteData: ObservableObject {
         }
     }
 
-    func syncItems(_ storeDetailModel: StoreDetailModel, _ callback: @escaping () -> Void) {
+    func syncItems(_ store: Store, _ callback: @escaping () -> Void) {
         Socket.default.once("items") { data in
             callback()
         }
 
         ensureConnection {
             Socket.default.emit("sync:items", [
-                "storeId": storeDetailModel.store.id,
-                "parentId": storeDetailModel.store.parentId
+                "storeId": store.id,
+                "parentId": store.parentId
             ])
         }
     }
 
-    // TODO: add callback to this and tracking 'addingItem' state
-    func addItem(_ storeDetailModel: StoreDetailModel) {
+    func addItem(_ store: Store) {
         ensureConnection {
             Socket.default.emit("add:item", [
-                "storeId": storeDetailModel.store.id
+                "storeId": store.id
             ])
         }
     }
 
-    func updateItem(_ storeDetailModel: StoreDetailModel, _ item: Item) {
-        modelData?.updateItem(storeDetailModel, item)
+    func updateItem(_ store: Store, _ item: Item) {
+        modelData?.updateItem(store.id, item)
 
         ensureConnection {
             Socket.default.emit("update:item", [
-                "storeId": storeDetailModel.store.id,
+                "storeId": store.id,
                 "item": item.serialize(),
             ])
         }
     }
 
-    func moveItem(_ storeDetailModel: StoreDetailModel, _ from: IndexSet, _ to: Int) {
-        modelData?.moveItem(storeDetailModel, from, to)
+    func moveItem(_ store: Store, _ from: IndexSet, _ to: Int) {
+        modelData?.moveItem(store.id, from, to)
 
         if modelData == nil { return }
 
         Socket.default.emit("update:items", [
-            "storeId": storeDetailModel.store.id,
-            "items": modelData!.serializeItems(storeDetailModel),
+            "storeId": store.id,
+            "items": modelData!.serializeItems(store.id),
         ])
     }
 
-    func deleteItem(_ storeDetailModel: StoreDetailModel, _ item: Item) {
-        modelData?.deleteItem(storeDetailModel, item)
+    func deleteItem(_ store: Store, _ item: Item) {
+        modelData?.deleteItem(store.id, item)
 
         ensureConnection {
             Socket.default.emit("delete:item", [
-                "storeId": storeDetailModel.store.id,
+                "storeId": store.id,
                 "itemId": item.id
             ])
         }

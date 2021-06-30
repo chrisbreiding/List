@@ -3,15 +3,15 @@ import Combine
 
 final class ModelData: ObservableObject {
     @Published var categories: [Category] = []
-    var categoryIndex: Int? = nil
-    var storeIndex: Int? = nil
 
     var hasStores: Bool {
         return categories.count > 0
     }
 
-    func store(_ storeDetailModel: StoreDetailModel) -> Store {
-        return categories[storeDetailModel.categoryIndex].stores[storeDetailModel.storeIndex]
+    func store(_ storeId: String) -> Store {
+        let (categoryIndex, storeIndex) = getIndicesByStoreId(storeId)!
+
+        return categories[categoryIndex].stores[storeIndex]
     }
 
     func getIndicesByStoreId(_ storeId: String) -> (Int, Int)? {
@@ -26,43 +26,39 @@ final class ModelData: ObservableObject {
         return nil
     }
 
-    func serializeItems(_ storeDetailModel: StoreDetailModel) -> [Item.Serialized] {
-        let catIndex = storeDetailModel.categoryIndex
-        let storeIndex = storeDetailModel.storeIndex
+    func serializeItems(_ storeId: String) -> [Item.Serialized] {
+        let (categoryIndex, storeIndex) = getIndicesByStoreId(storeId)!
 
-        return categories[catIndex].stores[storeIndex].serializeItems()
+        return categories[categoryIndex].stores[storeIndex].serializeItems()
     }
 
-    func updateItem(_ storeDetailModel: StoreDetailModel, _ item: Item) {
-        let catIndex = storeDetailModel.categoryIndex
-        let storeIndex = storeDetailModel.storeIndex
+    func updateItem(_ storeId: String, _ item: Item) {
+        let (categoryIndex, storeIndex) = getIndicesByStoreId(storeId)!
 
-        let index = categories[catIndex].stores[storeIndex].items.firstIndex(where: { $0.id == item.id })
+        let index = categories[categoryIndex].stores[storeIndex].items.firstIndex(where: { $0.id == item.id })
 
         if index == nil { return }
 
-        categories[catIndex].stores[storeIndex].items[index!] = item
+        categories[categoryIndex].stores[storeIndex].items[index!] = item
     }
 
-    func moveItem(_ storeDetailModel: StoreDetailModel, _ from: IndexSet, _ to: Int) {
-        let catIndex = storeDetailModel.categoryIndex
-        let storeIndex = storeDetailModel.storeIndex
+    func moveItem(_ storeId: String, _ from: IndexSet, _ to: Int) {
+        let (categoryIndex, storeIndex) = getIndicesByStoreId(storeId)!
 
-        categories[catIndex].stores[storeIndex].items.move(fromOffsets: from, toOffset: to)
+        categories[categoryIndex].stores[storeIndex].items.move(fromOffsets: from, toOffset: to)
 
         print("items:")
-        print(categories[catIndex].stores[storeIndex].items)
+        print(categories[categoryIndex].stores[storeIndex].items)
     }
     
-    func deleteItem(_ storeDetailModel: StoreDetailModel, _ item: Item) {
-        let catIndex = storeDetailModel.categoryIndex
-        let storeIndex = storeDetailModel.storeIndex
+    func deleteItem(_ storeId: String, _ item: Item) {
+        let (categoryIndex, storeIndex) = getIndicesByStoreId(storeId)!
 
-        let index = categories[catIndex].stores[storeIndex].items.firstIndex(where: { $0.id == item.id })
+        let index = categories[categoryIndex].stores[storeIndex].items.firstIndex(where: { $0.id == item.id })
 
         if index == nil { return }
 
-        categories[catIndex].stores[storeIndex].items.remove(at: index!)
+        categories[categoryIndex].stores[storeIndex].items.remove(at: index!)
     }
 
     func loadPreviewData() -> ModelData {
