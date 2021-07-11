@@ -6,7 +6,6 @@ final class RemoteData: ObservableObject {
     @Published var debug = UserDefaults.standard.bool(forKey: "Debug")
     var modelData: ModelData? = nil
     var timer: Timer? = nil
-    var cancelConnecting = false
 
     private var socketStatus: Socket.Status {
         return Socket.default.status
@@ -81,23 +80,7 @@ final class RemoteData: ObservableObject {
     func connect(triesLeft: Int, _ onConnect: @escaping () -> Void) {
         print("connect with \(triesLeft) tries left")
 
-        if cancelConnecting {
-            print("cancel connecting")
-
-            cancelConnecting = false
-
-            return
-        }
-
         Socket.default.connect(timeout: 5) { error in
-            if self.cancelConnecting {
-                print("cancel connecting")
-
-                self.cancelConnecting = false
-
-                return
-            }
-
             if error == nil {
                 onConnect()
 
@@ -115,7 +98,7 @@ final class RemoteData: ObservableObject {
     }
 
     func disconnect() {
-        cancelConnecting = true
+        print("disconnect")
 
         Socket.default.disconnect()
     }
